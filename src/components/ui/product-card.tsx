@@ -8,11 +8,11 @@ import { motion } from "framer-motion";
 interface ProductCardProps {
   id: string;
   name: string;
-  category: string;
+  category?: string;
   price: number;
   oldPrice?: number;
-  rating: number;
-  reviewsCount: number;
+  rating?: number;
+  reviewsCount?: number;
   image: string;
   badge?: string;
   slug: string;
@@ -20,11 +20,11 @@ interface ProductCardProps {
 
 const ProductCard = ({
   name,
-  category,
+  category = "اشتراك رقمي",
   price,
   oldPrice,
-  rating,
-  reviewsCount,
+  rating = 4.9,
+  reviewsCount = 120,
   image,
   badge,
   slug,

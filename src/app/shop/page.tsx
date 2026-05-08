@@ -8,17 +8,20 @@ import { Search, Filter } from "lucide-react";
 export default async function ShopPage({
   searchParams,
 }: {
-  searchParams: { category?: string; q?: string };
+  searchParams: Promise<{ category?: string; q?: string }>;
 }) {
+  const params = await searchParams;
+  const category = params.category;
+  const q = params.q;
   // 1. Build Query
   let query = supabase.from('products').select('*');
 
-  if (searchParams.category) {
-    query = query.eq('slug', searchParams.category); // Simplified for now
+  if (category) {
+    query = query.eq('slug', category); 
   }
 
-  if (searchParams.q) {
-    query = query.ilike('title_ar', `%${searchParams.q}%`);
+  if (q) {
+    query = query.ilike('title_ar', `%${q}%`);
   }
 
   const { data: products } = await query;

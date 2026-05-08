@@ -56,11 +56,18 @@ export default async function Home() {
         <section className="py-20">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-3xl font-bold mb-8">المنتجات المميزة</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {productsData?.map((p) => (
-                <ProductCard key={p.id} id={p.id} name={p.title_ar} price={p.price_monthly} image={p.image_url} slug={p.slug} />
+                <ProductCard 
+                  key={p.id} 
+                  id={p.id} 
+                  name={p.title_ar} 
+                  price={p.price_monthly} 
+                  image={p.image_url} 
+                  slug={p.slug}
+                  rating={4.9}
+                  reviewsCount={150}
+                />
               ))}
-            </div>
           </div>
         </section>
       </main>
