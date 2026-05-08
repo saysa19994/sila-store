@@ -2,11 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, ShoppingCart, User, Menu, Globe, CreditCard, LogOut, LayoutDashboard } from "lucide-react";
+import { ShoppingCart, User, Menu, Globe, CreditCard, LogOut, LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/components/providers/auth-provider";
 import { useCart } from "@/context/cart-context";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -14,6 +15,15 @@ const Navbar = () => {
   const [mounted, setMounted] = useState(false);
   const { user, signOut } = useAuth();
   const { cartCount } = useCart();
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/shop?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -50,14 +60,18 @@ const Navbar = () => {
 
         {/* Search Bar - Desktop */}
         <div className="hidden lg:flex items-center flex-1 max-w-md mx-8">
-          <div className="relative w-full">
+          <form onSubmit={handleSearch} className="relative w-full">
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="ابحث عن اشتراك (أدوبي، نتفلكس، كانفا...)"
               className="w-full bg-card/50 border border-border rounded-full py-2 px-10 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             />
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-          </div>
+            <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2">
+              <Search className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
+            </button>
+          </form>
         </div>
 
         {/* Actions */}
