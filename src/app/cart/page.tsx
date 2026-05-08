@@ -14,7 +14,7 @@ export default function CartPage() {
       name: "Adobe Creative Cloud",
       plan: "شهري",
       price: 49,
-      image: "https://upload.wikimedia.org/wikipedia/commons/a/af/Adobe_Creative_Cloud_logo_2020.svg",
+      image: "https://upload.wikimedia.org/wikipedia/commons/d/d1/Adobe_Creative_Cloud_logo_%282020%29.png",
       quantity: 1,
     }
   ];
