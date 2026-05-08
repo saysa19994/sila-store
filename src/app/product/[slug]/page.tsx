@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
+import AddToCartButtons from "@/components/product/add-to-cart-buttons";
 
 export default async function ProductDetails({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -78,16 +79,7 @@ export default async function ProductDetails({ params }: { params: Promise<{ slu
                   </p>
                </div>
 
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <button className="flex-1 bg-primary text-white py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 hover:scale-[1.02] transition-all shadow-xl shadow-primary/20">
-                    <ShoppingCart size={22} />
-                    أضف للسلة
-                  </button>
-                  <button className="flex-1 bg-card border border-border py-5 rounded-2xl font-bold text-lg flex items-center justify-center gap-3 hover:bg-muted transition-all">
-                    <Zap size={22} className="text-secondary" />
-                    شراء الآن
-                  </button>
-               </div>
+               <AddToCartButtons product={product} />
 
                {/* Trust Features */}
                <div className="grid grid-cols-2 gap-6 pt-6 border-t border-border">

@@ -1,25 +1,44 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { Trash2, Plus, Minus, ArrowLeft, Zap, ShieldCheck, ShoppingCart } from "lucide-react";
 import Link from "next/link";
 
 export default function CartPage() {
-  // Mock cart items
-  const cartItems = [
-    {
-      id: "1",
-      name: "Adobe Creative Cloud",
-      plan: "شهري",
-      price: 49,
-      image: "https://upload.wikimedia.org/wikipedia/commons/d/d1/Adobe_Creative_Cloud_logo_%282020%29.png",
-      quantity: 1,
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load cart from localStorage on mount
+  useEffect(() => {
+    const savedCart = localStorage.getItem("sila_cart");
+    if (savedCart) {
+      setCartItems(JSON.parse(savedCart));
     }
-  ];
+    setLoading(false);
+  }, []);
+
+  const updateQuantity = (id: string, delta: number) => {
+    const newCart = cartItems.map(item => {
+      if (item.id === id) {
+        return { ...item, quantity: Math.max(1, item.quantity + delta) };
+      }
+      return item;
+    });
+    setCartItems(newCart);
+    localStorage.setItem("sila_cart", JSON.stringify(newCart));
+  };
+
+  const removeItem = (id: string) => {
+    const newCart = cartItems.filter(item => item.id !== id);
+    setCartItems(newCart);
+    localStorage.setItem("sila_cart", JSON.stringify(newCart));
+  };
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  if (loading) return null;
 
   return (
     <>
@@ -29,18 +48,17 @@ export default function CartPage() {
           <h1 className="text-3xl font-bold mb-12">سلة المشتريات</h1>
 
           <div className="flex flex-col lg:flex-row gap-12">
-            {/* Cart Items List */}
             <div className="flex-1 space-y-6">
               {cartItems.length > 0 ? (
                 <>
-                  <div className="bg-card border border-border rounded-3xl overflow-hidden">
+                  <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
                     <table className="w-full text-right">
                       <thead className="bg-muted/50 border-b border-border hidden md:table-header-group">
                         <tr>
-                          <th className="px-8 py-4 font-bold text-sm">المنتج</th>
-                          <th className="px-8 py-4 font-bold text-sm">السعر</th>
-                          <th className="px-8 py-4 font-bold text-sm">الكمية</th>
-                          <th className="px-8 py-4 font-bold text-sm">المجموع</th>
+                          <th className="px-8 py-4 font-bold text-sm text-muted-foreground">المنتج</th>
+                          <th className="px-8 py-4 font-bold text-sm text-muted-foreground">السعر</th>
+                          <th className="px-8 py-4 font-bold text-sm text-muted-foreground">الكمية</th>
+                          <th className="px-8 py-4 font-bold text-sm text-muted-foreground">المجموع</th>
                           <th className="px-8 py-4"></th>
                         </tr>
                       </thead>
@@ -54,7 +72,7 @@ export default function CartPage() {
                                 </div>
                                 <div>
                                   <h4 className="font-bold text-lg">{item.name}</h4>
-                                  <p className="text-sm text-muted-foreground">الخطة: {item.plan}</p>
+                                  <p className="text-sm text-muted-foreground">الخطة: {item.plan || 'شهري'}</p>
                                 </div>
                               </div>
                             </td>
@@ -63,16 +81,16 @@ export default function CartPage() {
                             </td>
                             <td className="px-8 py-6">
                               <div className="flex items-center gap-4 bg-muted w-fit rounded-xl px-2 py-1">
-                                <button className="p-1 hover:text-primary transition-colors"><Minus size={16} /></button>
+                                <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:text-primary transition-colors"><Minus size={16} /></button>
                                 <span className="font-bold w-6 text-center">{item.quantity}</span>
-                                <button className="p-1 hover:text-primary transition-colors"><Plus size={16} /></button>
+                                <button onClick={() => updateQuantity(item.id, 1)} className="p-1 hover:text-primary transition-colors"><Plus size={16} /></button>
                               </div>
                             </td>
                             <td className="px-8 py-6">
                               <span className="font-bold text-primary">{item.price * item.quantity} ريال</span>
                             </td>
                             <td className="px-8 py-6 text-left">
-                               <button className="text-danger hover:bg-danger/10 p-2 rounded-xl transition-all">
+                               <button onClick={() => removeItem(item.id)} className="text-danger hover:bg-danger/10 p-2 rounded-xl transition-all">
                                  <Trash2 size={20} />
                                </button>
                             </td>
@@ -88,70 +106,49 @@ export default function CartPage() {
                   </div>
                 </>
               ) : (
-                <div className="bg-card border border-border rounded-3xl p-20 text-center space-y-6">
-                   <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto">
-                      <ShoppingCart size={48} className="text-muted-foreground" />
+                <div className="bg-card border border-border rounded-[40px] p-20 text-center space-y-6 shadow-xl shadow-primary/5">
+                   <div className="w-24 h-24 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto animate-pulse">
+                      <ShoppingCart size={48} />
                    </div>
-                   <h2 className="text-2xl font-bold">سلتك فارغة حالياً</h2>
-                   <p className="text-muted-foreground max-w-sm mx-auto">ابدأ باكتشاف أفضل الاشتراكات والخدمات الرقمية وأضفها إلى سلتك.</p>
-                   <Link href="/shop" className="inline-flex bg-primary text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-primary/20">العودة للمتجر</Link>
+                   <h2 className="text-3xl font-bold">سلتك فارغة</h2>
+                   <p className="text-muted-foreground max-w-sm mx-auto text-lg">لم تقم بإضافة أي منتج حتى الآن. استكشف متجرنا وابدأ التسوق!</p>
+                   <Link href="/shop" className="inline-flex bg-primary text-white px-10 py-4 rounded-2xl font-bold text-lg shadow-xl shadow-primary/20 hover:scale-105 transition-all">اكتشف المنتجات</Link>
                 </div>
               )}
             </div>
 
             {/* Summary Sidebar */}
-            <div className="w-full lg:w-96 space-y-6">
-              <div className="bg-card border border-border rounded-[32px] p-8 shadow-sm">
-                <h3 className="text-xl font-bold mb-8">ملخص الطلب</h3>
-                
-                <div className="space-y-4 mb-8">
-                  <div className="flex justify-between items-center text-muted-foreground">
-                    <span>المجموع الفرعي</span>
-                    <span className="font-bold text-foreground">{subtotal} ريال</span>
-                  </div>
-                  <div className="flex justify-between items-center text-muted-foreground">
-                    <span>الضريبة (15%)</span>
-                    <span className="font-bold text-foreground">0 ريال (شاملة)</span>
-                  </div>
-                  <div className="h-px bg-border my-4"></div>
-                  <div className="flex justify-between items-center text-2xl font-bold">
-                    <span>الإجمالي</span>
-                    <span className="text-primary">{subtotal} ريال</span>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="relative">
-                    <input 
-                      type="text" 
-                      placeholder="كود الخصم" 
-                      className="w-full bg-muted border border-transparent focus:border-primary rounded-xl py-3 px-4 focus:outline-none transition-all"
-                    />
-                    <button className="absolute left-2 top-1.5 bg-primary text-white px-4 py-1.5 rounded-lg text-sm font-bold">تطبيق</button>
+            {cartItems.length > 0 && (
+              <div className="w-full lg:w-96 space-y-6">
+                <div className="bg-card border border-border rounded-[40px] p-8 shadow-xl shadow-primary/5 sticky top-32">
+                  <h3 className="text-xl font-bold mb-8">ملخص الطلب</h3>
+                  
+                  <div className="space-y-4 mb-8">
+                    <div className="flex justify-between items-center text-muted-foreground">
+                      <span>المجموع الفرعي</span>
+                      <span className="font-bold text-foreground">{subtotal} ريال</span>
+                    </div>
+                    <div className="flex justify-between items-center text-muted-foreground">
+                      <span>الضريبة (15%)</span>
+                      <span className="font-bold text-foreground">0 ريال (شاملة)</span>
+                    </div>
+                    <div className="h-px bg-border my-4"></div>
+                    <div className="flex justify-between items-center text-2xl font-bold">
+                      <span>الإجمالي</span>
+                      <span className="text-primary">{subtotal} ريال</span>
+                    </div>
                   </div>
 
                   <Link 
                     href="/checkout" 
-                    className="flex w-full bg-primary text-white py-4 rounded-2xl font-bold text-lg items-center justify-center gap-2 shadow-xl shadow-primary/30 hover:scale-[1.02] transition-all"
+                    className="flex w-full bg-primary text-white py-5 rounded-2xl font-bold text-xl items-center justify-center gap-3 shadow-xl shadow-primary/30 hover:scale-[1.02] transition-all"
                   >
                     إتمام الطلب
-                    <ArrowLeft className="w-5 h-5" />
+                    <ArrowLeft className="w-6 h-6" />
                   </Link>
                 </div>
               </div>
-
-              {/* Trust Indicators */}
-              <div className="space-y-4">
-                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                   <ShieldCheck className="w-5 h-5 text-success" />
-                   <span>دفع آمن 100% ومشفر</span>
-                 </div>
-                 <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                   <Zap className="w-5 h-5 text-secondary" />
-                   <span>تسليم فوري ومضمون</span>
-                 </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </main>
