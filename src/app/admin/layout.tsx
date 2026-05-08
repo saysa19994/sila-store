@@ -13,12 +13,35 @@ import {
   Search,
   Menu
 } from "lucide-react";
+import { useAuth } from "@/components/providers/auth-provider";
+import { useRouter } from "next/navigation";
+
+const ADMIN_EMAIL = "sayedsaed2020@gmail.com";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  React.useEffect(() => {
+    if (!loading) {
+      if (!user || user.email !== ADMIN_EMAIL) {
+        router.push("/");
+      }
+    }
+  }, [user, loading, router]);
+
+  if (loading || !user || user.email !== ADMIN_EMAIL) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-muted/30 flex rtl">
       {/* Sidebar */}
