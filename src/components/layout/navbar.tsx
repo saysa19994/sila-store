@@ -6,12 +6,14 @@ import { Search, ShoppingCart, User, Menu, Globe, CreditCard, LogOut, LayoutDash
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/components/providers/auth-provider";
+import { useCart } from "@/context/cart-context";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const { user, signOut } = useAuth();
+  const { cartCount } = useCart();
 
   useEffect(() => {
     setMounted(true);
@@ -72,7 +74,7 @@ const Navbar = () => {
           <Link href="/cart" className="relative p-2 text-foreground hover:text-primary transition-colors">
             <ShoppingCart className="w-6 h-6" />
             <span className="absolute -top-1 -right-1 bg-secondary text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-              0
+              {cartCount}
             </span>
           </Link>
 

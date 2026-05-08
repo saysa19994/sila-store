@@ -1,44 +1,14 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Navbar from "@/components/layout/navbar";
 import Footer from "@/components/layout/footer";
 import { Trash2, Plus, Minus, ArrowLeft, Zap, ShieldCheck, ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import { useCart } from "@/context/cart-context";
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem("sila_cart");
-    if (savedCart) {
-      setCartItems(JSON.parse(savedCart));
-    }
-    setLoading(false);
-  }, []);
-
-  const updateQuantity = (id: string, delta: number) => {
-    const newCart = cartItems.map(item => {
-      if (item.id === id) {
-        return { ...item, quantity: Math.max(1, item.quantity + delta) };
-      }
-      return item;
-    });
-    setCartItems(newCart);
-    localStorage.setItem("sila_cart", JSON.stringify(newCart));
-  };
-
-  const removeItem = (id: string) => {
-    const newCart = cartItems.filter(item => item.id !== id);
-    setCartItems(newCart);
-    localStorage.setItem("sila_cart", JSON.stringify(newCart));
-  };
-
-  const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-
-  if (loading) return null;
+  const { cart, updateQuantity, removeFromCart, cartTotal } = useCart();
 
   return (
     <>
@@ -49,7 +19,7 @@ export default function CartPage() {
 
           <div className="flex flex-col lg:flex-row gap-12">
             <div className="flex-1 space-y-6">
-              {cartItems.length > 0 ? (
+              {cart.length > 0 ? (
                 <>
                   <div className="bg-card border border-border rounded-3xl overflow-hidden shadow-sm">
                     <table className="w-full text-right">
@@ -63,7 +33,7 @@ export default function CartPage() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border">
-                        {cartItems.map((item) => (
+                        {cart.map((item) => (
                           <tr key={item.id} className="flex flex-col md:table-row p-6 md:p-0">
                             <td className="px-8 py-6">
                               <div className="flex items-center gap-6">
@@ -80,17 +50,31 @@ export default function CartPage() {
                               <span className="font-bold">{item.price} ريال</span>
                             </td>
                             <td className="px-8 py-6">
-                              <div className="flex items-center gap-4 bg-muted w-fit rounded-xl px-2 py-1">
-                                <button onClick={() => updateQuantity(item.id, -1)} className="p-1 hover:text-primary transition-colors"><Minus size={16} /></button>
+                              <div className="flex items-center gap-4 bg-muted w-fit rounded-xl px-2 py-1 border border-border/50">
+                                <button 
+                                  onClick={() => updateQuantity(item.id, -1)} 
+                                  className="p-1 hover:text-primary transition-colors hover:bg-background rounded-lg"
+                                >
+                                  <Minus size={16} />
+                                </button>
                                 <span className="font-bold w-6 text-center">{item.quantity}</span>
-                                <button onClick={() => updateQuantity(item.id, 1)} className="p-1 hover:text-primary transition-colors"><Plus size={16} /></button>
+                                <button 
+                                  onClick={() => updateQuantity(item.id, 1)} 
+                                  className="p-1 hover:text-primary transition-colors hover:bg-background rounded-lg"
+                                >
+                                  <Plus size={16} />
+                                </button>
                               </div>
                             </td>
                             <td className="px-8 py-6">
                               <span className="font-bold text-primary">{item.price * item.quantity} ريال</span>
                             </td>
                             <td className="px-8 py-6 text-left">
-                               <button onClick={() => removeItem(item.id)} className="text-danger hover:bg-danger/10 p-2 rounded-xl transition-all">
+                               <button 
+                                 onClick={() => removeFromCart(item.id)} 
+                                 className="text-danger hover:bg-danger/10 p-2 rounded-xl transition-all"
+                                 title="حذف المنتج"
+                               >
                                  <Trash2 size={20} />
                                </button>
                             </td>
@@ -107,7 +91,7 @@ export default function CartPage() {
                 </>
               ) : (
                 <div className="bg-card border border-border rounded-[40px] p-20 text-center space-y-6 shadow-xl shadow-primary/5">
-                   <div className="w-24 h-24 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto animate-pulse">
+                   <div className="w-24 h-24 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto animate-bounce">
                       <ShoppingCart size={48} />
                    </div>
                    <h2 className="text-3xl font-bold">سلتك فارغة</h2>
@@ -118,7 +102,7 @@ export default function CartPage() {
             </div>
 
             {/* Summary Sidebar */}
-            {cartItems.length > 0 && (
+            {cart.length > 0 && (
               <div className="w-full lg:w-96 space-y-6">
                 <div className="bg-card border border-border rounded-[40px] p-8 shadow-xl shadow-primary/5 sticky top-32">
                   <h3 className="text-xl font-bold mb-8">ملخص الطلب</h3>
@@ -126,7 +110,7 @@ export default function CartPage() {
                   <div className="space-y-4 mb-8">
                     <div className="flex justify-between items-center text-muted-foreground">
                       <span>المجموع الفرعي</span>
-                      <span className="font-bold text-foreground">{subtotal} ريال</span>
+                      <span className="font-bold text-foreground">{cartTotal} ريال</span>
                     </div>
                     <div className="flex justify-between items-center text-muted-foreground">
                       <span>الضريبة (15%)</span>
@@ -135,7 +119,7 @@ export default function CartPage() {
                     <div className="h-px bg-border my-4"></div>
                     <div className="flex justify-between items-center text-2xl font-bold">
                       <span>الإجمالي</span>
-                      <span className="text-primary">{subtotal} ريال</span>
+                      <span className="text-primary">{cartTotal} ريال</span>
                     </div>
                   </div>
 

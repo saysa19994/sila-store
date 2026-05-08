@@ -4,6 +4,7 @@ import { Cairo, Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/components/providers/auth-provider";
+import { CartProvider } from "@/context/cart-context";
 import SalesNotification from "@/components/ui/sales-notification";
 
 const cairo = Cairo({
@@ -50,8 +51,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            {children}
-            <SalesNotification />
+            <CartProvider>
+              {children}
+              <SalesNotification />
+            </CartProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
