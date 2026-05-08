@@ -18,21 +18,30 @@ const MoyasarPayment = ({ amount, description, onSuccess }: MoyasarPaymentProps)
   const formRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && window.Moyasar) {
-      window.Moyasar.init({
-        element: ".mysr-form",
-        amount: amount,
-        currency: "SAR",
-        description: description,
-        publishable_api_key: process.env.NEXT_PUBLIC_MOYASAR_PUBLISHABLE_KEY || "pk_test_placeholder",
-        callback_url: `${window.location.origin}/order-confirmation`,
-        methods: ["creditcard", "applepay", "stcpay"],
-        on_completed: function (payment: any) {
-          if (payment.status === "paid") {
-            onSuccess(payment.id);
+    const initMoyasar = () => {
+      if (window.Moyasar) {
+        window.Moyasar.init({
+          element: ".mysr-form",
+          amount: amount,
+          currency: "SAR",
+          description: description,
+          publishable_api_key: process.env.NEXT_PUBLIC_MOYASAR_PUBLISHABLE_KEY,
+          callback_url: `${window.location.origin}/order-confirmation`,
+          methods: ["creditcard", "applepay"],
+          on_completed: function (payment: any) {
+            if (payment.status === "paid") {
+              onSuccess(payment.id);
+            }
           }
-        }
-      });
+        });
+      } else {
+        // Retry after a short delay if script not ready
+        setTimeout(initMoyasar, 500);
+      }
+    };
+
+    if (typeof window !== "undefined") {
+      initMoyasar();
     }
   }, [amount, description]);
 

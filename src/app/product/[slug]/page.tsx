@@ -14,12 +14,14 @@ import {
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 
-export default async function ProductDetails({ params }: { params: { slug: string } }) {
+export default async function ProductDetails({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  
   // 1. Fetch Product Data
   const { data: product } = await supabase
     .from('products')
     .select('*, categories(*)')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .single();
 
   if (!product) {

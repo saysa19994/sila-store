@@ -38,10 +38,9 @@ export default function CheckoutPage() {
                      <div className="p-6 bg-muted/50 rounded-2xl border border-dashed border-border text-center space-y-4">
                         <p className="text-sm text-muted-foreground">سيتم معالجة الدفع بشكل آمن عبر بوابة <strong>Moyasar</strong></p>
                         <div className="flex items-center justify-center gap-4 opacity-70 grayscale">
-                           <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-6" />
+                           <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" className="h-6" />
                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6" />
-                           <img src="https://moyasar.com/images/logos/apple-pay.svg" alt="Apple Pay" className="h-6" />
-                           <img src="https://moyasar.com/images/logos/mada.svg" alt="Mada" className="h-6" />
+                           <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-6" />
                         </div>
                      </div>
 
