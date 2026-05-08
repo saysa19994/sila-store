@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #6C3CE1;
+  --color-primary-dark: #5429C8;
+  --color-secondary: #00D4AA;
+  
+  --color-success: #22C55E;
+  --color-warning: #F59E0B;
+  --color-danger: #EF4444;
+  --color-info: #3B82F6;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+
+  --font-cairo: var(--font-cairo);
+  --font-inter: var(--font-inter);
+  
+  --radius-lg: 1rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
+}
+
+:root {
+  --background: #F8F9FF;
+  --foreground: #1A1A2E;
+  --card: #FFFFFF;
+  --card-foreground: #1A1A2E;
+  --muted: #F1F5F9;
+  --muted-foreground: #64748B;
+  --border: #E2E8F0;
+}
+
+.dark {
+  --background: #0F0F1A;
+  --foreground: #FFFFFF;
+  --card: #1A1A2E;
+  --card-foreground: #FFFFFF;
+  --muted: #2A2A3E;
+  --muted-foreground: #9CA3AF;
+  --border: #2E2E44;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.glass {
+  @apply bg-card/60 backdrop-blur-md border border-white/10;
+}
+
+.gradient-primary {
+  @apply bg-gradient-to-r from-primary to-primary-dark;
+}
+
+.gradient-glow {
+  @apply bg-gradient-to-br from-primary/20 via-transparent to-secondary/10;
+}
